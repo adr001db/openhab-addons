@@ -25,7 +25,6 @@ import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationForbiddenException;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ import com.google.gson.JsonParser;
 
 public class OnectaConnectionClient {
 
-    static private final Logger logger = LoggerFactory.getLogger(OnectaSignInClient.class);
+    static private final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
     public static final String HTTPHEADER_X_API_KEY = "x-api-key";
     public static final String HTTPHEADER_BEARER = "Bearer %s";
     public static final String USER_AGENT_VALUE = "Daikin/1.6.1.4681 CFNetwork/1209 Darwin/20.2.0";
@@ -51,8 +50,7 @@ public class OnectaConnectionClient {
 
     private static OnectaSignInClient onectaSignInClient;
 
-    public static void SetConnectionClient(HttpClientFactory httpClientFactory) {
-        // httpClient = httpClientFactory.getCommonHttpClient();
+    public static void SetConnectionClient() {
         onectaSignInClient = new OnectaSignInClient();
     }
 
