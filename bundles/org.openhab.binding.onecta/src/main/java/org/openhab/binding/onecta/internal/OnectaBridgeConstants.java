@@ -48,4 +48,7 @@ public class OnectaBridgeConstants {
     public static final ThingTypeUID GATEWAY_THING_TYPE = new ThingTypeUID(BINDING_ID, GATEWAY);
     public static final ThingTypeUID WATERTANK_THING_TYPE = new ThingTypeUID(BINDING_ID, WATERTANK);
     public static final ThingTypeUID INDOORUNIT_THING_TYPE = new ThingTypeUID(BINDING_ID, INDOORUNIT);
+
+    public static final String THIRD_PARTY_ENDPOINTS_BASENAME = "https://idp.onecta.daikineurope.com/v1/oidc";
+    public static final String OAUTH2_SERVICE_HANDLE = BINDING_ID + ":" + BRIDGE;
 }

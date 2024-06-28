@@ -37,10 +37,10 @@ import com.google.gson.JsonParser;
 public class OnectaConnectionClient {
 
     static private final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
-    public static final String HTTPHEADER_X_API_KEY = "x-api-key";
+    // public static final String HTTPHEADER_X_API_KEY = "x-api-key";
     public static final String HTTPHEADER_BEARER = "Bearer %s";
-    public static final String USER_AGENT_VALUE = "Daikin/1.6.1.4681 CFNetwork/1209 Darwin/20.2.0";
-    public static final String HTTPHEADER_X_API_KEY_VALUE = "xw6gvOtBHq5b1pyceadRp6rujSNSZdjx2AqT03iC";
+    public static final String USER_AGENT_VALUE = "Daikin/3.27.4.8971 CFNetwork/1496.0.7 Darwin/23.5.0";
+    // public static final String HTTPHEADER_X_API_KEY_VALUE = "Wy6spBzSNVa2QQS5JkTyZ8iiXAXuEBxt1rPCdAEF";
 
     private static JsonArray rawData = new JsonArray();
     private static Units onectaData = new Units();
@@ -76,7 +76,10 @@ public class OnectaConnectionClient {
                     .method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
-                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).send();
+                    // .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE)
+                    .send();
+
+            logger.debug("Headers " + response.getHeaders().toString());
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 && !refreshed) {
                 onectaSignInClient.fetchAccessToken();
@@ -112,7 +115,10 @@ public class OnectaConnectionClient {
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
-                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).send();
+                    // .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE)
+                    .send();
+
+            logger.debug("Headers " + response.getHeaders().toString());
 
             logger.debug("Request : " + response.getRequest().getURI().toString());
             logger.debug("Body    : " + new Gson().toJson(body));

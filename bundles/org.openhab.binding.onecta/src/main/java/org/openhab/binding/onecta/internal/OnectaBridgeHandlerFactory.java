@@ -21,7 +21,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.handler.*;
+import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
+import org.openhab.binding.onecta.internal.handler.OnectaDeviceHandler;
+import org.openhab.binding.onecta.internal.handler.OnectaGatewayHandler;
+import org.openhab.binding.onecta.internal.handler.OnectaIndoorUnitHandler;
+import org.openhab.binding.onecta.internal.handler.OnectaWaterTankHandler;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -57,10 +62,11 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference OAuthTokenRefresher openHabOAuthTokenRefresher) {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
         OnectaConfiguration.setHttpClientFactory(httpClientFactory);
+        OnectaConfiguration.setOAuthTokenRefresher(openHabOAuthTokenRefresher);
     }
 
     @Override

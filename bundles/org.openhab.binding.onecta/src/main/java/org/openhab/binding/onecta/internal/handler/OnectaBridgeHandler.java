@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.onecta.internal.OnectaBridgeConstants;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
@@ -112,6 +113,8 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
+
+        OnectaConfiguration.getOAuthTokenRefresher().unsetRefreshListener(OnectaBridgeConstants.OAUTH2_SERVICE_HANDLE);
     }
 
     private void pollDevices() {

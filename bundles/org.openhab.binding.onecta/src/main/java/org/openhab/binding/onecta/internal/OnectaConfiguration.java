@@ -17,6 +17,7 @@ import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 
@@ -35,6 +36,7 @@ public class OnectaConfiguration {
     private @Nullable static HttpClientFactory httpClientFactory = null;
 
     private @Nullable static HttpClient httpClient = null;
+    private @Nullable static OAuthTokenRefresher openHabOAuthTokenRefresher = null;
 
     public static void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         OnectaConfiguration.httpClientFactory = httpClientFactory;
@@ -55,5 +57,13 @@ public class OnectaConfiguration {
 
     public static @Nullable HttpClientFactory getHttpClientFactory() {
         return httpClientFactory;
+    }
+
+    public static void setOAuthTokenRefresher(OAuthTokenRefresher openHabOAuthTokenRefresher) {
+        OnectaConfiguration.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
+    }
+
+    public static @Nullable OAuthTokenRefresher getOAuthTokenRefresher() {
+        return openHabOAuthTokenRefresher;
     }
 }
