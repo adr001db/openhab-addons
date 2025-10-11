@@ -14,6 +14,10 @@ package org.openhab.binding.onecta.internal.api;
 
 import static org.openhab.binding.onecta.internal.api.OnectaProperties.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -166,10 +170,22 @@ public class OnectaConnectionClient {
     public void refreshUnitsData() throws DaikinCommunicationException {
 
         Response response = doBearerRequestGet(false);
-        String responseString = ((HttpContentResponse) response).getContentAsString();
+        // String responseString = ((HttpContentResponse) response).getContentAsString();
+
+        // ToDo Stub data
+        String responseString = "";
+        try {
+            responseString = new String(
+                    Files.readAllBytes(Paths.get("C:\\Data\\openhab\\system\\openhab-5.0.1\\addons\\test3.json")),
+                    StandardCharsets.UTF_8);
+
+        } catch (IOException e) {
+            logger.debug("Error reading file :" + e.getMessage());
+        }
 
         logger.trace("Response body: {}", responseString);
-        if (response.getStatus() == HttpStatus.OK_200) {
+        // if (response.getStatus() == HttpStatus.OK_200) {
+        if (true) {
             try {
                 onectaCompleteJsonArrayData = JsonParser.parseString(responseString).getAsJsonArray();
                 onectaUnitsData.getAll().clear();
