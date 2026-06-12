@@ -62,7 +62,7 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     public OnectaWaterTankHandler(Thing thing, OnectaConfiguration onectaConfiguration) {
         super(thing);
-        this.onectaConfiguration = onectaConfiguration;
+
         dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.WATERTANK,
                 onectaConfiguration.getOnectaConnectionClient());
     }
@@ -179,9 +179,9 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR, getEnergyHeatingCurrentYear());
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    getOnectaTranslationProvider().getText("unknown.unitid-not-exists"));
             getThing().setProperty(PROPERTY_HWT_NAME,
-                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    getOnectaTranslationProvider().getText("unknown.unitid-not-exists"));
         }
     }
 

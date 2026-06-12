@@ -14,22 +14,20 @@ package org.openhab.binding.onecta.internal.handler;
 
 import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstants.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -49,19 +47,27 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
+    private @Nullable DeviceDiscoveryService deviceDiscoveryService;
+
     private Units units = new Units();
     private OnectaConnectionClient onectaConnectionClient;
-    private OnectaConfiguration onectaConfiguration;
+    private @Nullable OnectaTranslationProvider onectaTranslationProvider;
+
+    public OnectaBridgeHandler(Bridge bridge, OAuthTokenRefresher oAuthTokenRefresher,
+            HttpClientFactory httpClientFactory, OnectaTranslationProvider onectaTranslationProvider) {
+        super(bridge);
+        onectaConnectionClient = new OnectaConnectionClient(oAuthTokenRefresher, httpClientFactory);
+        this.onectaTranslationProvider = onectaTranslationProvider;
+    }
 
     public List<Unit> getUnits() {
         return onectaConnectionClient.getUnits().getAll();
     }
 
     public OnectaTranslationProvider getOnectaTranslationProvider() {
-        return onectaConfiguration.getTranslation();
+        Optional<OnectaTranslationProvider> optionalTranslation = Optional.ofNullable(onectaTranslationProvider);
+        return optionalTranslation.orElseThrow(() -> new RuntimeException("Translation provider is not available"));
     }
-
-    private @Nullable DeviceDiscoveryService deviceDiscoveryService;
 
     /**
      * Defines a runnable for a discovery
@@ -75,11 +81,14 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public OnectaBridgeHandler(Bridge bridge, OnectaConfiguration onectaConfiguration) {
-        super(bridge);
-        this.onectaConfiguration = onectaConfiguration;
-        onectaConnectionClient = onectaConfiguration.getOnectaConnectionClient();
-    }
+    // ToDo remove code
+    /*
+     * public OnectaBridgeHandler(Bridge bridge, OnectaConfiguration onectaConfiguration) {
+     * super(bridge);
+     * this.onectaConfiguration = onectaConfiguration;
+     * onectaConnectionClient = onectaConfiguration.getOnectaConnectionClient();
+     * }
+     */
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -110,7 +119,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            onectaConfiguration.getOnectaConnectionClient().openConnecttion();
+            onectaConnectionClient.openConnecttion();
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error");
         }

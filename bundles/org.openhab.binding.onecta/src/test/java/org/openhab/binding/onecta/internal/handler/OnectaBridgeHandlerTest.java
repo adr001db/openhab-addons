@@ -29,10 +29,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.DummyThing;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
+import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -59,8 +61,17 @@ public class OnectaBridgeHandlerTest {
 
     @Mock
     private OnectaConnectionClient onectaConnectionClientMock;
+
+    // ToDO hier moet nog iets mee gedaan worden, anders krijg ik een NPE bij het aanmaken van de handler, omdat deze
+    // een OAuthTokenRefresher nodig heeft
     @Mock
-    private OnectaConfiguration onectaConfigurationMock;
+    private OAuthTokenRefresher oAuthTokenRefresher;
+
+    @Mock
+    private HttpClientFactory httpClientFactory;
+
+    @Mock
+    private OnectaTranslationProvider onectaTranslationProvider;
 
     @Mock
     private OnectaDeviceHandler onectaDeviceHandlerMock;
@@ -77,7 +88,8 @@ public class OnectaBridgeHandlerTest {
         thingConfiguration.setProperties(bridgeProperties);
         lenient().when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
 
-        handler = new OnectaBridgeHandler(bridgeMock, onectaConfigurationMock);
+        handler = new OnectaBridgeHandler(bridgeMock, oAuthTokenRefresher, httpClientFactory,
+                onectaTranslationProvider);
         handler.setCallback(callbackMock);
 
         // add Mock dataTransServiceMock to handler

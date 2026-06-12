@@ -22,13 +22,14 @@ import java.util.concurrent.TimeoutException;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.dto.commands.CommandOnOf;
 import org.openhab.binding.onecta.internal.api.dto.commands.CommandTrueFalse;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
@@ -36,6 +37,8 @@ import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationDataException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationForbiddenException;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +61,15 @@ public class OnectaConnectionClient {
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
     private OnectaSignInClient onectaSignInClient;
-    private OnectaConfiguration onectaConfiguration;
 
-    public OnectaConnectionClient(OnectaConfiguration onectaConfiguration) {
-        this.onectaConfiguration = onectaConfiguration;
-        onectaSignInClient = new OnectaSignInClient(onectaConfiguration);
+    private @Nullable OAuthTokenRefresher oAuthTokenRefresher;
+    private @Nullable HttpClientFactory httpClientFactory = null;
+
+    public OnectaConnectionClient(OAuthTokenRefresher oAuthTokenRefresher, HttpClientFactory httpClientFactory) {
+        onectaSignInClient = new OnectaSignInClient(oAuthTokenRefresher);
+
+        this.oAuthTokenRefresher = oAuthTokenRefresher;
+        this.httpClientFactory = httpClientFactory;
     }
 
     public void openConnecttion() {
@@ -100,7 +107,8 @@ public class OnectaConnectionClient {
         logger.debug("doBearerRequestGet : Accesstoken refreshed {}", refreshed.toString());
         try {
             String testUrl = getBaseUrl("");
-            response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
+            assert httpClientFactory != null;
+            response = newRequest(testUrl).method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
@@ -137,7 +145,7 @@ public class OnectaConnectionClient {
     private Response doBearerRequestPatch(String url, Object body, Boolean refreshed) {
         Response response = null;
         try {
-            response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
+            response = newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
@@ -167,6 +175,10 @@ public class OnectaConnectionClient {
             throw new RuntimeException("Response is null");
         }
         return response;
+    }
+
+    private Request newRequest(String url) {
+        return httpClientFactory.getCommonHttpClient().newRequest(url);
     }
 
     public void refreshUnitsData() throws DaikinCommunicationException {

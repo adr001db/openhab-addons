@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
+import java.util.Objects;
 import java.util.Optional;
 
+import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
  * The {@link AbstractOnectaHandler} abstract for all Onecta Handlers
@@ -32,5 +36,25 @@ public abstract class AbstractOnectaHandler extends BaseThingHandler {
 
     public String getUnitID() {
         return Optional.ofNullable(thing.getConfiguration().get("unitID")).orElse("").toString();
+    }
+
+    public OnectaTranslationProvider getOnectaTranslationProvider() {
+
+        return Objects.requireNonNull(getOnectaBridgeHandler().map(OnectaBridgeHandler::getOnectaTranslationProvider)
+                .orElseThrow(() -> new RuntimeException("Translation provider is not available")));
+    }
+
+    private Optional<OnectaBridgeHandler> getOnectaBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return Optional.empty();
+        }
+
+        BridgeHandler handler = bridge.getHandler();
+        if (!(handler instanceof OnectaBridgeHandler)) {
+            return Optional.empty();
+        }
+
+        return Optional.of((OnectaBridgeHandler) handler);
     }
 }

@@ -50,12 +50,22 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final OnectaConfiguration onectaConfiguration;
+    private OAuthTokenRefresher oAuthTokenRefresher;
+    private HttpClientFactory httpClientFactory;
+    private OnectaTranslationProvider onectaTranslationProvider;
 
     @Activate
     public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference OAuthTokenRefresher openHabOAuthTokenRefresher,
-            @Reference OnectaTranslationProvider translation) {
-        onectaConfiguration = new OnectaConfiguration(httpClientFactory, openHabOAuthTokenRefresher, translation);
+            @Reference OAuthTokenRefresher oAuthTokenRefresher,
+            @Reference OnectaTranslationProvider onectaTranslationProvider) {
+
+        this.httpClientFactory = httpClientFactory;
+        this.oAuthTokenRefresher = oAuthTokenRefresher;
+        this.onectaTranslationProvider = onectaTranslationProvider;
+
+        //ToDo remove code
+        onectaConfiguration = new OnectaConfiguration(httpClientFactory, oAuthTokenRefresher,
+                onectaTranslationProvider);
     }
 
     @Override
@@ -68,9 +78,11 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
-            OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing, onectaConfiguration);
-            onectaConfiguration.setBridgeThing(thing);
-            return bridgeHandler;
+            return new OnectaBridgeHandler((Bridge) thing, oAuthTokenRefresher, httpClientFactory,
+                    onectaTranslationProvider);
+            // ToDo remove code
+            // onectaConfiguration.setBridgeThing(thing);
+            // return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
             return new OnectaDeviceHandler(thing, onectaConfiguration);
         } else if (thingTypeUID.equals((THING_TYPE_GATEWAY))) {

@@ -16,7 +16,6 @@ import static org.openhab.binding.onecta.internal.constants.OnectaBridgeConstant
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefreshListener;
 import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
@@ -32,16 +31,14 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(OnectaSignInClient.class);
 
     private @Nullable OAuthTokenRefresher oAuthTokenRefresher;
-    private OnectaConfiguration onectaConfiguration;
 
-    public OnectaSignInClient(OnectaConfiguration onectaConfiguration) {
+    public OnectaSignInClient(OAuthTokenRefresher oAuthTokenRefresher) {
         super();
-        this.onectaConfiguration = onectaConfiguration;
+        this.oAuthTokenRefresher = oAuthTokenRefresher;
     }
 
     public void SignIn() throws DaikinCommunicationException {
         try {
-            this.oAuthTokenRefresher = onectaConfiguration.getOAuthTokenRefresher();
             oAuthTokenRefresher.unsetRefreshListener(OAUTH2_SERVICE_HANDLE);
             oAuthTokenRefresher.setRefreshListener(this, OAUTH2_SERVICE_HANDLE);
         } catch (Throwable e) {
