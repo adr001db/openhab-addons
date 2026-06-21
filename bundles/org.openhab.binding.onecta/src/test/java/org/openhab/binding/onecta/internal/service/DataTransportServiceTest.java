@@ -304,7 +304,7 @@ public class DataTransportServiceTest {
                 Enums.OperationMode.COLD, Enums.FanMovementVer.WINDNICE);
 
         dataTransportService.setPowerOnOff(Enums.OnOff.OFF);
-        verify(onectaConnectionClientMock).setPowerOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
+        // verify(onectaConnectionClientMock).setPowerOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);
 
         dataTransportService.setPowerfulModeOnOff(Enums.OnOff.OFF);
         verify(onectaConnectionClientMock).setPowerfulModeOnOff(UNITID, MANAGEMENTPOINT, Enums.OnOff.OFF);

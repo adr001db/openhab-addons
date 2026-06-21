@@ -54,8 +54,8 @@ public class OnectaProperties {
         return StringUtils.removeEnd(String.format(BASE_URL, unitId), "/");
     }
 
-    public static String getUrlOnOff(String unitId, Enums.ManagementPoint managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ONOFFMODE);
+    public static String getUrlOnOff(String unitId, String managementPointType) {
+        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType, COMMAND_ONOFFMODE);
     }
 
     public static String getUrlPowerfulModeOnOff(String unitId, Enums.ManagementPoint managementPointType) {

@@ -204,8 +204,9 @@ public class OnectaConnectionClient {
         return new JsonObject();
     }
 
-    public void setPowerOnOff(String unitId, Enums.ManagementPoint managementPointType, Enums.OnOff value) {
-        logger.debug("setPowerOnOff : {}, {}, {}", unitId, managementPointType.getValue(), value);
+    // ToDo
+    public void setPowerOnOff(String unitId, String managementPointType, Enums.OnOff value) {
+        logger.debug("setPowerOnOff : {}, {}, {}", unitId, managementPointType, value);
         CommandOnOf commandOnOf = new CommandOnOf(value);
         doBearerRequestPatch(getUrlOnOff(unitId, managementPointType), commandOnOf);
     }
