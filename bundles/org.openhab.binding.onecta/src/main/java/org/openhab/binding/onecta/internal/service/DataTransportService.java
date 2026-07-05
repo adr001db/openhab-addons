@@ -82,7 +82,7 @@ public class DataTransportService {
     }
 
     public void setCurrentOperationMode(Enums.OperationMode value) {
-        onectaConnectionClient.setCurrentOperationMode(unitId, managementPointType, value);
+        onectaConnectionClient.setCurrentOperationMode(unitId, getEmbeddedId(), value);
     }
 
     public Enums.FanSpeed getCurrentFanspeed() {
@@ -178,7 +178,7 @@ public class DataTransportService {
     }
 
     public void setPowerfulModeOnOff(Enums.OnOff value) {
-        onectaConnectionClient.setPowerfulModeOnOff(unitId, managementPointType, value);
+        onectaConnectionClient.setPowerfulModeOnOff(unitId, getEmbeddedId(), value);
     }
 
     public String getEconoMode() {
@@ -189,7 +189,7 @@ public class DataTransportService {
     }
 
     public void setEconoMode(Enums.OnOff value) {
-        onectaConnectionClient.setEconoMode(unitId, managementPointType, value);
+        onectaConnectionClient.setEconoMode(unitId, getEmbeddedId(), value);
     }
 
     public String getUnitName() {
