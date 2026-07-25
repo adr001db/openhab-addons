@@ -63,7 +63,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         this.oAuthTokenRefresher = oAuthTokenRefresher;
         this.onectaTranslationProvider = onectaTranslationProvider;
 
-        //ToDo remove code
+        // ToDo remove code
         onectaConfiguration = new OnectaConfiguration(httpClientFactory, oAuthTokenRefresher,
                 onectaTranslationProvider);
     }
